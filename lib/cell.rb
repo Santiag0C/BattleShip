@@ -3,7 +3,7 @@ class Cell
 
   def initialize(coordinate)
     @coordinate = coordinate
-    @ship
+    @ship = nil
     @has_it_been_fired = false
   end
 
@@ -24,7 +24,23 @@ class Cell
   end
 
   def fire_upon
+    if @ship != nil
+      @ship.hit
+    end
     @has_it_been_fired = true
-    @ship.hit
+  end
+
+  def render(player = false)
+    if player == true
+      "S"
+    elsif @ship == nil && @has_it_been_fired == true
+      "M"
+    elsif @ship != nil && @has_it_been_fired == true && @ship.sunk? == false
+      "H"
+    elsif @has_it_been_fired == true && @ship.sunk? == true
+      "X"
+    else
+      "."
+    end
   end
 end
