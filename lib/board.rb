@@ -23,6 +23,21 @@ class Board
   end
   def valid_coordinate?(coordinate)
     @cells.has_key?(coordinate.to_sym)
+  end
 
+  def valid_placement?(ship, coordinates)
+    if ship.length == coordinates.count
+      letter = []
+      number = []
+      if coordinates.each do |coordin|
+        binding.pry
+        letter << coordin[0]
+        number << coordin[1]
+      end
+
+    else
+      "not valid"
+      end
+    end
   end
 end
