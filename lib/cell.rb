@@ -31,7 +31,7 @@ class Cell
   end
 
   def render(player = false)
-    if player == true
+    if player == true && @ship != nil
       "S"
     elsif @ship == nil && @has_it_been_fired == true
       "M"
