@@ -1,7 +1,7 @@
 require 'minitest/autorun'
 require 'minitest/pride'
 require './lib/ship'
-# require './lib/cell'
+require './lib/cell'
 require './lib/board'
 require 'pry'
 
@@ -55,5 +55,3 @@ class BoardTest < Minitest::Test
     assert_equal true, cell_1.ship == cell_2.ship
   end
 end
-
-__END__
