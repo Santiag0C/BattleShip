@@ -26,18 +26,32 @@ class Board
   end
 
   def valid_placement?(ship, coordinates)
-    if ship.length == coordinates.count
-      letter = []
-      number = []
-      if coordinates.each do |coordin|
-        binding.pry
-        letter << coordin[0]
-        number << coordin[1]
-      end
+    valid_length = placement_coordinates_equals_ship_length?(ship, coordinates)
+    consecutive = placement_coordinates_consecutive?(ship, coordinates)
+    valid_length == true && consecutive == true
+  end
 
-    else
-      "not valid"
-      end
+  def placement_coordinates_equals_ship_length?(ship, coordinates)
+    ship.length == coordinates.count
+  end
+
+  def placement_coordinates_consecutive?(ship, coordinates)
+    letters = []
+    numbers = []
+    coordinates.map do |coordinate|
+      letters << coordinate[0]
+      numbers << coordinate[1]
+    end
+    if letters.uniq.length == 1 && numbers.uniq.length == ship.length
+      first_number = numbers.sort[0]
+      last_number = numbers.sort[-1]
+      range = (first_number .. last_number).to_a
+      range.length == ship.length
+    elsif numbers.uniq.length == 1 && letters.uniq.length == ship.length
+      first_letter = letters.sort[0]
+      last_letter = letters.sort[-1]
+      range = (first_letter .. last_letter).to_a
+      range.length == ship.length
     end
   end
 end
