@@ -54,4 +54,12 @@ class Board
       range.length == ship.length
     end
   end
+
+  def place(ship, coordinates)
+    if valid_placement?(ship, coordinates)
+      coordinates.map do |coordinate|
+        @cells[coordinate.to_sym].place_ship(ship)
+      end
+    end
+  end
 end
