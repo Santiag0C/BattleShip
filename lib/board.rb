@@ -29,14 +29,30 @@ class Board
     if ship.length == coordinates.count
       letter = []
       number = []
-      if coordinates.each do |coordin|
+      coordinates.each do |coordin|
         binding.pry
         letter << coordin[0]
         number << coordin[1]
-      end
+          end
+        letter.uniq!.sort!
+        number.uniq!.sort!
 
-    else
-      "not valid"
+        if letter.count == 1 && number.count == 3 && number.last < 5
+          #then its horizontal and a crus
+          if number.last - number.first == 2
+
+        elsif letter.count == 1 && number.count == 2 && number.last < 5
+          #this is horizontal and a sub
+          if number.last - number.first == 1
+
+        elsif letter.count == 3 && number.count == 1
+          #is crus and vertical
+
+        elsif letter.count == 2 && number.count == 1
+          #is sub and vertical
+
+        else
+          "not valid"
       end
     end
   end
