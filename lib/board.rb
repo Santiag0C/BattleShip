@@ -35,7 +35,7 @@ class Board
   def check_for_overlaping_ships(coordinates)
     coordinates.each do |coordinate|
       if @cells[coordinate.to_sym].empty? == false
-        binding.pry
+    
         return false
       end
     end
