@@ -6,8 +6,13 @@ require 'pry'
 class Game
 
   def initialize
-    @board = Board.new
-    @ships = {
+    @player_board = Board.new
+    @computer_board = Board.new
+    @player_ships = {
+      crusier: Ship.new("Crusier", 3),
+      submarine: Ship.new("Submarine", 2)
+    }
+    @computer_ships = {
       crusier: Ship.new("Crusier", 3),
       submarine: Ship.new("Submarine", 2)
     }
@@ -36,25 +41,26 @@ class Game
     # This method will call the helper methods below to setup the game.
     setup_computer_place_ships
     setup_player_place_ships
+
   end
 
   def setup_computer_place_ships
     # this method will execute the code for the computer to place ships.
-    @ships.each do |ship|
+    @computer_ships.each do |ship|
       possible_coordinates = []
       possible_left = []
       possible_right = []
       possible_up = []
       possible_down = []
 
-      remaining_cells = @board.cells.select { |key, hash| hash.ship == nil }
+      remaining_cells = @computer_board.cells.select { |key, hash| hash.ship == nil }
       selected_cell = remaining_cells.to_a.sample
       i = 0
       while i < ship[1].length do
         #right
         letter = selected_cell[0][0]
         number = selected_cell[0][1].to_i + i
-        if @board.valid_coordinate?(letter + number.to_s)
+        if @computer_board.valid_coordinate?(letter + number.to_s)
           possible_right << letter + number.to_s
         end
         i += 1
@@ -64,7 +70,7 @@ class Game
         #left
         letter = selected_cell[0][0]
         number = selected_cell[0][1].to_i - i
-        if @board.valid_coordinate?(letter + number.to_s)
+        if @computer_board.valid_coordinate?(letter + number.to_s)
           possible_left << letter + number.to_s
         end
         i += 1
@@ -74,7 +80,7 @@ class Game
         #up
         letter = selected_cell[0][0].ord + i
         number = selected_cell[0][1]
-        if @board.valid_coordinate?(letter.chr + number)
+        if @computer_board.valid_coordinate?(letter.chr + number)
           possible_up << letter.chr + number
         end
         i += 1
@@ -84,7 +90,7 @@ class Game
         #down
         letter = selected_cell[0][0].ord - i
         number = selected_cell[0][1]
-        if @board.valid_coordinate?(letter.chr + number)
+        if @computer_board.valid_coordinate?(letter.chr + number)
           possible_down << letter.chr + number
         end
         i += 1
@@ -94,31 +100,51 @@ class Game
       # try to place the ship with possible_coordinates
       while ship_placed == false
         try_coordinates = possible_coordinates.shuffle.pop
-        if @board.valid_placement?(ship[1], try_coordinates) == true
-          @board.place(ship[1], try_coordinates)
+        if @computer_board.valid_placement?(ship[1], try_coordinates) == true
+          @computer_board.place(ship[1], try_coordinates)
           ship_placed = true
         end
       end
     end
+    #only shows the ship placment..
+    #puts @board.render(true)
 
-    puts @board.render(true)
-
-    puts "Computer is placing ships!"
-    sleep(1); print " ."
-    sleep(0.5); print ".  "
-    sleep(1.5); print "."
-    sleep(0.5); print "."
-    sleep(0.5); print "."
-    sleep(1.5); print "  ."
-    sleep(0.5); print ".  "
-    sleep(1)
+    # puts "Computer is placing ships!"
+    # sleep(1); print " ."
+    # sleep(0.5); print ".  "
+    # sleep(1.5); print "."
+    # sleep(0.5); print "."
+    # sleep(0.5); print "."
+    # sleep(1.5); print "  ."
+    # sleep(0.5); print ".  "
+    # sleep(1)
   end
 
   def setup_player_place_ships
     #this method will execute the code for the player to place ships.
-    puts "\nplayer place your ships."
-    print "Location: "
-    user_input = gets
+    puts "\nI have laid out my ships on the grid."
+    puts "You now need to lay out your two ships."
+    @player_ships.each{|ship| puts "The #{ship[1].name} is #{ship[1].length}."}
+    puts @player_board.render(true)
+    puts "Enter the coordinates seperated by a space"
+    @player_ships.each do |ship|
+      ship_placed = false
+      while ship_placed == false
+        puts "Now placing the #{ship[1].name}, taking up #{ship[1].length}."
+        print "Coordinates: "
+        user_input = gets.chomp.upcase.split
+        if user_input.length == ship[1].length
+          if user_input.each{|coordinate| @player_board.valid_coordinate?(coordinate)}
+            if @player_board.valid_placement?(ship[1], user_input)
+              @player_board.place(ship[1], user_input)
+              puts "#{ship[1].name} placed!"
+              puts @player_board.render(true)
+              ship_placed = true
+            end
+          end
+        end
+      end
+    end
   end
 
   def start_turns
