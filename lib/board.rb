@@ -1,5 +1,5 @@
 require './lib/cell'
-
+require 'pry'
 class Board
   attr_reader :cells
   def initialize
@@ -35,6 +35,7 @@ class Board
   def check_for_overlaping_ships(coordinates)
     coordinates.each do |coordinate|
       if @cells[coordinate.to_sym].empty? == false
+    
         return false
       end
     end

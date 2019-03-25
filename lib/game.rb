@@ -9,7 +9,7 @@ class Game
     @player_board = Board.new
     @computer_board = Board.new
     @player_ships = {
-      crusier: Ship.new("Crusier", 3),
+      # crusier: Ship.new("Crusier", 3),
       submarine: Ship.new("Submarine", 2)
     }
     @computer_ships = {
@@ -22,6 +22,7 @@ class Game
     main_menu
     setup_game
     start_turns
+    # end_game
   end
 
   def main_menu
@@ -156,43 +157,53 @@ class Game
   def turns_display_boards
     10.times{puts " "}
     puts "Computer's Board\n"
-    puts @computer_board.render(true) #remove true once completed
+    puts @computer_board.render() #remove true once completed
     puts "\n\n Your Board\n"
-    puts @player_bb4oard.render(true)
+    puts @player_board.render(true)
     puts " "
   end
 
   def turns_player_shot
-
+    puts "Choose a coordinate to fire on"
+    input = gets.chomp.upcase
+    if @computer_board.valid_coordinate?(input) == true
+      if@computer_board.cells[input.to_sym].fire_upon? == false
+        @computer_board.cells[input.to_sym].fire_upon
+        puts "Hit"
+      else
+        puts "This cell has been fire upon"
+        turns_player_shot
+      end
+    else
+      puts "this is not a valid coordinate"
+      turns_player_shot
+    end
   end
-
   def turns_computer_shot
+    remaining_cells = @player_board.cells.select { |key, hash| hash.fire_upon? == false }
+    selected_cell = remaining_cells.to_a.sample
+    selected_cell[1].fire_upon
+    puts turns_display_boards
 
   end
 
   def turns_results
-
+    status = game_over?
+    if status == false
+      start_turns
+    end
   end
 
   def game_over?
-    player_remaining_ships = @player_board.cells.select { |key, hash| binding.pry; hash.ship.sunk? == false }
-    computer_remaining_ships = @computer_board.cells.select { |key, hash| hash.ship.sunk? == false }
-    binding.pry
+    player_remaining_ships =   @player_ships.select{| key, ship| ship.sunk? == false }
+    computer_remaining_ships = @computer_ships.select{|key, ship| ship.sunk? == false }
     if computer_remaining_ships.length < 1
-      player_wins = true
-
+      puts "Player wins!"
+      return true
     elsif player_remaining_ships.length < 1
-      player_wins = false
+      puts "Computer wins!"
+      return true
     end
+    return false
   end
-
-  def end_game(player_wins)
-    #this method will end the game
-    if player_wins
-      puts "You won!"
-    els player_wins == false
-      puts "I won!"
-    end
-  end
-
 end
