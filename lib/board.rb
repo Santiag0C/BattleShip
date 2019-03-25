@@ -74,8 +74,6 @@ class Board
   end
 
   def render(rend = false)
-
-
     "  1 2 3 4 \n" +
     "A #{@cells[:A1].render(rend)} #{@cells[:A2].render(rend)} #{@cells[:A3].render(rend)} #{@cells[:A4].render(rend)} \n" +
     "B #{@cells[:B1].render(rend)} #{@cells[:B2].render(rend)} #{@cells[:B3].render(rend)} #{@cells[:B4].render(rend)} \n" +
