@@ -7,12 +7,13 @@ class Game
    @board = Board.new
    @cruiser = Ship.new("Cruiser", 3)
    @submarine = Ship.new("Submarine", 2)
+   @number_of_ships = 0
   end
   def start
     main_menu
     setup_game
     start_turns
-    end_game
+    # end_game
   end
 
   def main_menu
@@ -47,41 +48,81 @@ class Game
       ship = @submarine
     end
 
+    letters_abil = ("A".."Z").to_a[0..bord_size-1]
+    let_num_last = letters_abil.last.ord
+    let_num_first = letters_abil.first.ord
     numb_selected = selected_cell[1].coordinate[1].to_i
     leter_selected = selected_cell[1].coordinate[0]
+
+
     place_cord = []
-    num = rand(1..4)
+    num = 1
     if num == 1 && numb_selected + (ship.length - 1) <= bord_size
       place_cord << selected_cell[1].coordinate
-      while place_cord != ship.length
+      while place_cord.count != ship.length
         numb_selected += 1
         place_cord << "#{leter_selected}#{numb_selected}"
-        binding.pry
         #right
       end
-
-    elsif num == 2 && leter_selected + (ship.length - 1) <= bord_size
+      if @board.valid_placement?(ship, place_cord) == true
+        @board.place(ship, place_cord)
+      end
+    elsif num == 2 && leter_selected.ord + (ship.length - 1) <= let_num_last
+      let_in_numb = leter_selected.ord
       place_cord << selected_cell[1].coordinate
-      while place_cord != ship.length
-        numb_selected += 1
-        place_cord << "#{leter_selected}#{numb_selected}"
+      while place_cord.count != ship.length
+        let_in_numb += 1
+        place_cord << "#{let_in_numb.chr}#{numb_selected}"
         #down
       end
+      if @board.valid_placement?(ship, place_cord) == true
+        @board.place(ship, place_cord)
+      end
 
-    # elsif num == 3 
+    elsif num == 3 && numb_selected - (ship.length - 1) >= 1
+      place_cord << selected_cell[1].coordinate
+      while place_cord.count != ship.length
+        numb_selected -= 1
+        place_cord << "#{leter_selected}#{numb_selected}"
+        #left
+      end
+      if @board.valid_placement?(ship, place_cord) == true
+        @board.place(ship, place_cord)
+        binding.pry
+      end
 
-    # elsif num == 4
-    # puts "Computer is placing ships!"
-    # sleep(1.5); print " .. "
-    # sleep(1); print " ... "
-    # sleep(1.5); print " .. "
+    elsif num == 4 && leter_selected.ord - (ship.length - 1) >= let_num_first
+      let_in_numb = leter_selected.ord
+      place_cord << selected_cell[1].coordinate
+      while place_cord.count != ship.length
+        let_in_numb -= 1
+        place_cord << "#{let_in_numb.chr}#{numb_selected}"
+        #up
+      end
+      if @board.valid_placement?(ship, place_cord) == true
+         @board.place(ship, place_cord)
+      end
+      else
+        remaining_cells.delete(selected_cell[0])
+      end
     end
-  end
+
+
 
 
   def setup_player_place_ships
     #this method will execute the code for the player to place ships.
-    puts "\nplayer place your ships."
+    ran_ship = rand(0..1)
+    if ran_ship == 0
+      ship = @cruiser
+    else
+      ship = @submarine
+    end
+
+    @board.render(rend = false)
+    puts "Place your you'r #{ship.name} (#{ship.health} spaces)"
+    puts "Example (A1, b2, C3)"
+    #input = gets.chomp
   end
 
   def start_turns
