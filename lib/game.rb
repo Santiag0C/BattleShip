@@ -9,7 +9,7 @@ class Game
     @player_board = Board.new
     @computer_board = Board.new
     @player_ships = {
-      crusier: Ship.new("Crusier", 3),
+      #crusier: Ship.new("Crusier", 3),
       submarine: Ship.new("Submarine", 2)
     }
     @computer_ships = {
@@ -22,7 +22,6 @@ class Game
     main_menu
     setup_game
     #start_turns
-    end_game
   end
 
   def main_menu
@@ -41,7 +40,7 @@ class Game
     # This method will call the helper methods below to setup the game.
     setup_computer_place_ships
     setup_player_place_ships
-
+    game_over?
   end
 
   def setup_computer_place_ships
@@ -109,15 +108,15 @@ class Game
     #only shows the ship placment..
     #puts @board.render(true)
 
-    # puts "Computer is placing ships!"
-    # sleep(1); print " ."
-    # sleep(0.5); print ".  "
-    # sleep(1.5); print "."
-    # sleep(0.5); print "."
-    # sleep(0.5); print "."
-    # sleep(1.5); print "  ."
-    # sleep(0.5); print ".  "
-    # sleep(1)
+    puts "Computer is placing ships!"
+    sleep(1); print " ."
+    sleep(0.5); print ".  "
+    sleep(1.5); print "."
+    sleep(0.5); print "."
+    sleep(0.5); print "."
+    sleep(1.5); print "  ."
+    sleep(0.5); print ".  "
+    sleep(1)
   end
 
   def setup_player_place_ships
@@ -154,10 +153,25 @@ class Game
     turns_results
   end
 
-  def end_game
+  def game_over?
+    player_remaining_ships = @player_board.cells.select { |key, hash| binding.pry; hash.ship.sunk? == false }
+    computer_remaining_ships = @computer_board.cells.select { |key, hash| hash.ship.sunk? == false }
+    binding.pry
+    if computer_remaining_ships.length < 1
+      player_wins = true
+
+    elsif player_remaining_ships.length < 1
+      player_wins = false
+    end
+  end
+
+  def end_game(player_wins)
     #this method will end the game
-    "You won!"
-    "I won!"
+    if player_wins
+      puts "You won!"
+    els player_wins == false
+      puts "I won!"
+    end
   end
 
 end
