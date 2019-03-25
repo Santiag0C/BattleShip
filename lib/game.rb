@@ -9,7 +9,7 @@ class Game
     @player_board = Board.new
     @computer_board = Board.new
     @player_ships = {
-      #crusier: Ship.new("Crusier", 3),
+      crusier: Ship.new("Crusier", 3),
       submarine: Ship.new("Submarine", 2)
     }
     @computer_ships = {
@@ -21,7 +21,7 @@ class Game
   def start
     main_menu
     setup_game
-    #start_turns
+    start_turns
   end
 
   def main_menu
@@ -40,7 +40,7 @@ class Game
     # This method will call the helper methods below to setup the game.
     setup_computer_place_ships
     setup_player_place_ships
-    game_over?
+    #game_over?
   end
 
   def setup_computer_place_ships
@@ -109,14 +109,14 @@ class Game
     #puts @board.render(true)
 
     puts "Computer is placing ships!"
-    sleep(1); print " ."
-    sleep(0.5); print ".  "
-    sleep(1.5); print "."
-    sleep(0.5); print "."
-    sleep(0.5); print "."
-    sleep(1.5); print "  ."
-    sleep(0.5); print ".  "
-    sleep(1)
+    # sleep(1); print " ."
+    # sleep(0.5); print ".  "
+    # sleep(1.5); print "."
+    # sleep(0.5); print "."
+    # sleep(0.5); print "."
+    # sleep(1.5); print "  ."
+    # sleep(0.5); print ".  "
+    # sleep(1)
   end
 
   def setup_player_place_ships
@@ -151,6 +151,27 @@ class Game
     turns_player_shot
     turns_computer_shot
     turns_results
+  end
+
+  def turns_display_boards
+    10.times{puts " "}
+    puts "Computer's Board\n"
+    puts @computer_board.render(true) #remove true once completed
+    puts "\n\n Your Board\n"
+    puts @player_bb4oard.render(true)
+    puts " "
+  end
+
+  def turns_player_shot
+
+  end
+
+  def turns_computer_shot
+
+  end
+
+  def turns_results
+
   end
 
   def game_over?
