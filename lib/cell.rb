@@ -31,14 +31,14 @@ class Cell
   end
 
   def render(player = false)
-    if player == true && @ship != nil
-      "S"
-    elsif @ship == nil && @has_it_been_fired == true
+    if @ship == nil && @has_it_been_fired == true
       "M"
     elsif @ship != nil && @has_it_been_fired == true && @ship.sunk? == false
       "H"
     elsif @has_it_been_fired == true && @ship.sunk? == true
       "X"
+    elsif player == true && @ship != nil
+      "S"
     else
       "."
     end

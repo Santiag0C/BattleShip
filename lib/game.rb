@@ -1,14 +1,23 @@
 require './lib/ship'
 require './lib/cell'
 require './lib/board'
+require 'pry'
 
 class Game
+
   def initialize
-   @board = Board.new
-   @cruiser = Ship.new("Cruiser", 3)
-   @submarine = Ship.new("Submarine", 2)
-   @number_of_ships = 0
+    @player_board = Board.new
+    @computer_board = Board.new
+    @player_ships = {
+      # crusier: Ship.new("Crusier", 3),
+      submarine: Ship.new("Submarine", 2)
+    }
+    @computer_ships = {
+      crusier: Ship.new("Crusier", 3),
+      submarine: Ship.new("Submarine", 2)
+    }
   end
+
   def start
     main_menu
     setup_game
@@ -32,110 +41,179 @@ class Game
     # This method will call the helper methods below to setup the game.
     setup_computer_place_ships
     setup_player_place_ships
+    #game_over?
   end
 
   def setup_computer_place_ships
     # this method will execute the code for the computer to place ships.
-    remaining_cells = @board.cells.select { |key, hash| hash.ship == nil }
-    selected_cell = remaining_cells.to_a[rand(0 .. remaining_cells.length)]
-    selected_cell[1].coordinate
-    bord_size = @board.cells.count/4
+    @computer_ships.each do |ship|
+      possible_coordinates = []
+      possible_left = []
+      possible_right = []
+      possible_up = []
+      possible_down = []
 
-    ran_ship = rand(0..1)
-    if ran_ship == 0
-      ship = @cruiser
-    else
-      ship = @submarine
-    end
-
-    letters_abil = ("A".."Z").to_a[0..bord_size-1]
-    let_num_last = letters_abil.last.ord
-    let_num_first = letters_abil.first.ord
-    numb_selected = selected_cell[1].coordinate[1].to_i
-    leter_selected = selected_cell[1].coordinate[0]
-
-
-    place_cord = []
-    num = 1
-    if num == 1 && numb_selected + (ship.length - 1) <= bord_size
-      place_cord << selected_cell[1].coordinate
-      while place_cord.count != ship.length
-        numb_selected += 1
-        place_cord << "#{leter_selected}#{numb_selected}"
+      remaining_cells = @computer_board.cells.select { |key, hash| hash.ship == nil }
+      selected_cell = remaining_cells.to_a.sample
+      i = 0
+      while i < ship[1].length do
         #right
+        letter = selected_cell[0][0]
+        number = selected_cell[0][1].to_i + i
+        if @computer_board.valid_coordinate?(letter + number.to_s)
+          possible_right << letter + number.to_s
+        end
+        i += 1
       end
-      if @board.valid_placement?(ship, place_cord) == true
-        @board.place(ship, place_cord)
-      end
-    elsif num == 2 && leter_selected.ord + (ship.length - 1) <= let_num_last
-      let_in_numb = leter_selected.ord
-      place_cord << selected_cell[1].coordinate
-      while place_cord.count != ship.length
-        let_in_numb += 1
-        place_cord << "#{let_in_numb.chr}#{numb_selected}"
-        #down
-      end
-      if @board.valid_placement?(ship, place_cord) == true
-        @board.place(ship, place_cord)
-      end
-
-    elsif num == 3 && numb_selected - (ship.length - 1) >= 1
-      place_cord << selected_cell[1].coordinate
-      while place_cord.count != ship.length
-        numb_selected -= 1
-        place_cord << "#{leter_selected}#{numb_selected}"
+      i = 0
+      while i < ship[1].length do
         #left
+        letter = selected_cell[0][0]
+        number = selected_cell[0][1].to_i - i
+        if @computer_board.valid_coordinate?(letter + number.to_s)
+          possible_left << letter + number.to_s
+        end
+        i += 1
       end
-      if @board.valid_placement?(ship, place_cord) == true
-        @board.place(ship, place_cord)
-        binding.pry
-      end
-
-    elsif num == 4 && leter_selected.ord - (ship.length - 1) >= let_num_first
-      let_in_numb = leter_selected.ord
-      place_cord << selected_cell[1].coordinate
-      while place_cord.count != ship.length
-        let_in_numb -= 1
-        place_cord << "#{let_in_numb.chr}#{numb_selected}"
+      i = 0
+      while i < ship[1].length do
         #up
+        letter = selected_cell[0][0].ord + i
+        number = selected_cell[0][1]
+        if @computer_board.valid_coordinate?(letter.chr + number)
+          possible_up << letter.chr + number
+        end
+        i += 1
       end
-      if @board.valid_placement?(ship, place_cord) == true
-         @board.place(ship, place_cord)
+      i = 0
+      while i < ship[1].length do
+        #down
+        letter = selected_cell[0][0].ord - i
+        number = selected_cell[0][1]
+        if @computer_board.valid_coordinate?(letter.chr + number)
+          possible_down << letter.chr + number
+        end
+        i += 1
       end
-      else
-        remaining_cells.delete(selected_cell[0])
+      possible_coordinates = [possible_right, possible_left, possible_up, possible_down]
+      ship_placed = false
+      # try to place the ship with possible_coordinates
+      while ship_placed == false
+        try_coordinates = possible_coordinates.shuffle.pop
+        if @computer_board.valid_placement?(ship[1], try_coordinates) == true
+          @computer_board.place(ship[1], try_coordinates)
+          ship_placed = true
+        end
       end
     end
+    #only shows the ship placment..
+    #puts @board.render(true)
 
-
-
+    puts "Computer is placing ships!"
+    # sleep(1); print " ."
+    # sleep(0.5); print ".  "
+    # sleep(1.5); print "."
+    # sleep(0.5); print "."
+    # sleep(0.5); print "."
+    # sleep(1.5); print "  ."
+    # sleep(0.5); print ".  "
+    # sleep(1)
+  end
 
   def setup_player_place_ships
     #this method will execute the code for the player to place ships.
-    ran_ship = rand(0..1)
-    if ran_ship == 0
-      ship = @cruiser
-    else
-      ship = @submarine
+    puts "\nI have laid out my ships on the grid."
+    puts "You now need to lay out your two ships."
+    @player_ships.each{|ship| puts "The #{ship[1].name} is #{ship[1].length}."}
+    puts @player_board.render(true)
+    puts "Enter the coordinates seperated by a space"
+    @player_ships.each do |ship|
+      ship_placed = false
+      while ship_placed == false
+        puts "Now placing the #{ship[1].name}, taking up #{ship[1].length}."
+        print "Coordinates: "
+        user_input = gets.chomp.upcase.split
+        if user_input.length == ship[1].length
+          if user_input.each{|coordinate| @player_board.valid_coordinate?(coordinate)}
+            if @player_board.valid_placement?(ship[1], user_input)
+              @player_board.place(ship[1], user_input)
+              puts "#{ship[1].name} placed!"
+              puts @player_board.render(true)
+              ship_placed = true
+            end
+          end
+        end
+      end
     end
-
-    @board.render(rend = false)
-    puts "Place your you'r #{ship.name} (#{ship.health} spaces)"
-    puts "Example (A1, b2, C3)"
-    #input = gets.chomp
   end
 
   def start_turns
-    #turns_display_boards
-    # turns_player_shot
-    # turns_computer_shot
-    # turns_results
+    turns_display_boards
+    turns_player_shot
+    turns_computer_shot
+    turns_results
   end
 
-  def end_game
-    #this method will end the game
-    "You won!"
-    "I won!"
+  def turns_display_boards
+    10.times{puts " "}
+    puts "Computer's Board\n"
+    puts @computer_board.render() #remove true once completed
+    puts "\n\n Your Board\n"
+    puts @player_board.render(true)
+    puts " "
   end
+
+  def turns_player_shot
+    puts "Choose a coordinate to fire on"
+    input = gets.chomp.upcase
+    if @computer_board.valid_coordinate?(input) == true
+      if@computer_board.cells[input.to_sym].fire_upon? == false
+        @computer_board.cells[input.to_sym].fire_upon
+        puts "Hit"
+      else
+        puts "This cell has been fire upon"
+        turns_player_shot
+      end
+    else
+      puts "this is not a valid coordinate"
+      turns_player_shot
+    end
+  end
+  def turns_computer_shot
+    remaining_cells = @player_board.cells.select { |key, hash| hash.fire_upon? == false }
+    selected_cell = remaining_cells.to_a.sample
+    selected_cell[1].fire_upon
+    puts turns_display_boards
+
+  end
+
+  def turns_results
+    status = game_over?
+    if status == false
+      start_turns
+    end
+  end
+
+  def game_over?
+    player_remaining_ships =   @player_ships.select{| key, ship| ship.sunk? == false }
+    computer_remaining_ships = @computer_ships.select{|key, ship| ship.sunk? == false }
+    if computer_remaining_ships.length < 1
+      puts "Player wins!"
+      return true
+    elsif player_remaining_ships.length < 1
+      puts "Computer wins!"
+      return true
+    end
+    return false
+  end
+
+  # def end_game(player_wins)
+  #   #this method will end the game
+  #   if player_wins
+  #     puts "You won!"
+  #   else
+  #     puts "I won!"
+  #   end
+  # end
 
 end
