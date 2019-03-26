@@ -206,14 +206,4 @@ class Game
     end
     return false
   end
-
-  # def end_game(player_wins)
-  #   #this method will end the game
-  #   if player_wins
-  #     puts "You won!"
-  #   else
-  #     puts "I won!"
-  #   end
-  # end
-
 end
