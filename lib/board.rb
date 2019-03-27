@@ -1,13 +1,14 @@
 require './lib/cell'
-require 'pry'
+
 class Board
   attr_reader :cells
+
   def initialize
     @cells = {}
   end
 
   def create_cells(number)
-    characters = ("A" .. ("A".ord + number - 1).chr).to_a
+    characters = ("A" .. (64 + number).chr).to_a
     numbers = (1 .. number).to_a
     characters.each do |char|
       numbers.each do |num|
@@ -24,19 +25,18 @@ class Board
     valid_length = placement_coordinates_equals_ship_length?(ship, coordinates)
     consecutive = placement_coordinates_consecutive?(ship, coordinates)
     overlaping_ships = check_for_overlaping_ships(coordinates)
-    valid_length == true && consecutive == true && overlaping_ships == true
+    valid_length && consecutive && overlaping_ships
   end
-#helper
+
   def check_for_overlaping_ships(coordinates)
     coordinates.each do |coordinate|
       if @cells[coordinate.to_sym].empty? == false
-
         return false
       end
     end
     true
   end
-#helper
+
   def placement_coordinates_equals_ship_length?(ship, coordinates)
     ship.length == coordinates.count
   end
@@ -49,18 +49,15 @@ class Board
       numbers << coordinate[1]
     end
     if letters.uniq.length == 1 && numbers.uniq.length == ship.length
-      first_number = numbers.sort[0]
-      last_number = numbers.sort[-1]
-      range = (first_number .. last_number).to_a
-      range.length == ship.length
+      range = (numbers.sort[0] .. numbers.sort[-1]).to_a
+      return range.length == ship.length
     elsif numbers.uniq.length == 1 && letters.uniq.length == ship.length
-      first_letter = letters.sort[0]
-      last_letter = letters.sort[-1]
-      range = (first_letter .. last_letter).to_a
-      range.length == ship.length
+      range = (letters.sort[0] .. letters.sort[-1]).to_a
+      return range.length == ship.length
     end
+    false
   end
-#
+
   def place(ship, coordinates)
     if valid_placement?(ship, coordinates)
       coordinates.map do |coordinate|
@@ -81,20 +78,5 @@ class Board
       end
       puts " "
     end
-
-    # "  1 2 3 4 \n" +
-    # "A #{@cells[:A1].render(rend)} #{@cells[:A2].render(rend)} #{@cells[:A3].render(rend)} #{@cells[:A4].render(rend)} \n" +
-    # "B #{@cells[:B1].render(rend)} #{@cells[:B2].render(rend)} #{@cells[:B3].render(rend)} #{@cells[:B4].render(rend)} \n" +
-    # "C #{@cells[:C1].render(rend)} #{@cells[:C2].render(rend)} #{@cells[:C3].render(rend)} #{@cells[:C4].render(rend)} \n" +
-    # "D #{@cells[:D1].render(rend)} #{@cells[:D2].render(rend)} #{@cells[:D3].render(rend)} #{@cells[:D4].render(rend)} \n"
   end
 end
-# array_of_arrays = [['a1','a2','a3'],['b1','b2','b3'],['c1','c2','c3']]
-# array_of_arrays.each do |array|
-#   print array[0][0]
-#   array.each do |value|
-#     print " "
-#     print value
-#   end
-#   puts " "
-# end
