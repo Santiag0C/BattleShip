@@ -39,9 +39,22 @@ class Game
 
   def setup_game
     # This method will call the helper methods below to setup the game.
+    setup_board_size
     setup_computer_place_ships
     setup_player_place_ships
     #game_over?
+  end
+
+  def setup_board_size
+    puts "Enter board size; number 4 through 10"
+    input = gets.chomp.to_i
+    if input >= 4 && input <= 10
+      @player_board.create_cells(input)
+      @computer_board.create_cells(input)
+    else
+      puts "Invalid input!"
+      setup_board_size
+    end
   end
 
   def setup_computer_place_ships

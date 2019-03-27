@@ -3,24 +3,19 @@ require 'pry'
 class Board
   attr_reader :cells
   def initialize
-    @cells = {A1: Cell.new("A1"),
-              A2: Cell.new("A2"),
-              A3: Cell.new("A3"),
-              A4: Cell.new("A4"),
-              B1: Cell.new("B1"),
-              B2: Cell.new("B2"),
-              B3: Cell.new("B3"),
-              B4: Cell.new("B4"),
-              C1: Cell.new("C1"),
-              C2: Cell.new("C2"),
-              C3: Cell.new("C3"),
-              C4: Cell.new("C4"),
-              D1: Cell.new("D1"),
-              D2: Cell.new("D2"),
-              D3: Cell.new("D3"),
-              D4: Cell.new("D4")
-            }
+    @cells = {}
   end
+
+  def create_cells(number)
+    characters = ("A" .. ("A".ord + number - 1).chr).to_a
+    numbers = (1 .. number).to_a
+    characters.each do |char|
+      numbers.each do |num|
+        @cells[("#{char}#{num}").to_sym] = Cell.new("#{char}#{num}")
+      end
+    end
+  end
+
   def valid_coordinate?(coordinate)
     @cells.has_key?(coordinate.to_sym)
   end
@@ -35,7 +30,7 @@ class Board
   def check_for_overlaping_ships(coordinates)
     coordinates.each do |coordinate|
       if @cells[coordinate.to_sym].empty? == false
-    
+
         return false
       end
     end
@@ -75,11 +70,31 @@ class Board
   end
 
   def render(rend = false)
-    "  1 2 3 4 \n" +
-    "A #{@cells[:A1].render(rend)} #{@cells[:A2].render(rend)} #{@cells[:A3].render(rend)} #{@cells[:A4].render(rend)} \n" +
-    "B #{@cells[:B1].render(rend)} #{@cells[:B2].render(rend)} #{@cells[:B3].render(rend)} #{@cells[:B4].render(rend)} \n" +
-    "C #{@cells[:C1].render(rend)} #{@cells[:C2].render(rend)} #{@cells[:C3].render(rend)} #{@cells[:C4].render(rend)} \n" +
-    "D #{@cells[:D1].render(rend)} #{@cells[:D2].render(rend)} #{@cells[:D3].render(rend)} #{@cells[:D4].render(rend)} \n"
-  end
+    number_of_columns = (1 .. Math.sqrt(@cells.length)).to_a
+    rows = @cells.to_a.each_slice(number_of_columns.count)
+    print " "; number_of_columns.each{|num| print " #{num}"}; print "\n"
+    rows.each do |row|
+      print row[0][0].to_s[0]
+      row.each do |value|
+        print " "
+        print value[1].render(rend)
+      end
+      puts " "
+    end
 
+    # "  1 2 3 4 \n" +
+    # "A #{@cells[:A1].render(rend)} #{@cells[:A2].render(rend)} #{@cells[:A3].render(rend)} #{@cells[:A4].render(rend)} \n" +
+    # "B #{@cells[:B1].render(rend)} #{@cells[:B2].render(rend)} #{@cells[:B3].render(rend)} #{@cells[:B4].render(rend)} \n" +
+    # "C #{@cells[:C1].render(rend)} #{@cells[:C2].render(rend)} #{@cells[:C3].render(rend)} #{@cells[:C4].render(rend)} \n" +
+    # "D #{@cells[:D1].render(rend)} #{@cells[:D2].render(rend)} #{@cells[:D3].render(rend)} #{@cells[:D4].render(rend)} \n"
+  end
 end
+# array_of_arrays = [['a1','a2','a3'],['b1','b2','b3'],['c1','c2','c3']]
+# array_of_arrays.each do |array|
+#   print array[0][0]
+#   array.each do |value|
+#     print " "
+#     print value
+#   end
+#   puts " "
+# end

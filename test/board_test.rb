@@ -71,6 +71,11 @@ class BoardTest < Minitest::Test
      assert_equal expected_1, board.render
      expected_2 = "  1 2 3 4 \nA S S S . \nB . . . . \nC . . . . \nD . . . . \n"
      assert_equal expected_2, board.render(true)
-
+  end
+  def test_does_it_create_cells
+    board = Board.new
+    board.create_cells(5)
+    
+    assert_equal 25, board.cells.count
   end
 end
