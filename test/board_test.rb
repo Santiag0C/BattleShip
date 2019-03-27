@@ -3,21 +3,20 @@ require 'minitest/pride'
 require './lib/ship'
 require './lib/cell'
 require './lib/board'
-require 'pry'
 
 class BoardTest < Minitest::Test
   def test_it_exists
     board = Board.new
     assert_instance_of Board, board
   end
-  def test_board_cells_initiates_with_16_cells
+  def test_board_cells_initiates_with_empty_cells_hash
     board = Board.new
-    assert_equal 16, board.cells.count
+    assert_equal 0, board.cells.count
     assert_equal Hash, board.cells.class
-    assert_instance_of Cell, board.cells[:A1]
   end
   def test_valid_coordinate
     board = Board.new
+    board.create_cells(4)
     assert_equal true, board.valid_coordinate?("A1")
     assert_equal true, board.valid_coordinate?("D4")
     assert_equal false, board.valid_coordinate?("A5")
@@ -26,6 +25,7 @@ class BoardTest < Minitest::Test
   end
   def test_valid_placement_of_ships
     board = Board.new
+    board.create_cells(4)
     cruiser = Ship.new("Cruiser", 3)
     submarine = Ship.new("Submarine", 2)
     assert_equal false, board.valid_placement?(cruiser, ["A1", "A2"])
@@ -42,6 +42,7 @@ class BoardTest < Minitest::Test
 
   def test_placing_a_ship_on_board_where_cells_contain_ships
     board = Board.new
+    board.create_cells(4)
     cruiser = Ship.new("Cruiser", 3)
     board.place(cruiser, ["A1","A2", "A3"])
     cell_1 = board.cells[:A1]
@@ -56,26 +57,18 @@ class BoardTest < Minitest::Test
   end
   def test_for_overlaping_ships
     board = Board.new
+    board.create_cells(4)
     cruiser = Ship.new("Cruiser", 3)
     board.place(cruiser, ["A1","A2", "A3"])
     submarine = Ship.new("Submarine", 2)
     assert_equal false, board.valid_placement?(submarine, ["A1", "B1"])
     assert_equal true, board.valid_placement?(submarine, ["B1", "B2"])
   end
-  def test_board_renders
-     board = Board.new
-     cruiser = Ship.new("Cruiser", 3)
-     board.place(cruiser, ["A1", "A2", "A3"])
 
-     expected_1 = "  1 2 3 4 \nA . . . . \nB . . . . \nC . . . . \nD . . . . \n"
-     assert_equal expected_1, board.render
-     expected_2 = "  1 2 3 4 \nA S S S . \nB . . . . \nC . . . . \nD . . . . \n"
-     assert_equal expected_2, board.render(true)
-  end
   def test_does_it_create_cells
     board = Board.new
     board.create_cells(5)
-    
+
     assert_equal 25, board.cells.count
   end
 end
