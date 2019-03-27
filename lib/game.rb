@@ -7,14 +7,12 @@ class Game
   def initialize
     @player_board = Board.new
     @computer_board = Board.new
-    @player_ships = {
+    @default_ships = {
       crusier: Ship.new("Crusier", 3),
       submarine: Ship.new("Submarine", 2)
     }
-    @computer_ships = {
-      crusier: Ship.new("Crusier", 3),
-      submarine: Ship.new("Submarine", 2)
-    }
+    @player_ships = {}
+    @computer_ships = {}
   end
 
   def start
@@ -38,8 +36,37 @@ class Game
   def setup_game
     # This method will call the helper methods below to setup the game.
     setup_board_size
+    setup_dynamic_ships?
     setup_computer_place_ships
     setup_player_place_ships
+  end
+
+  def setup_dynamic_ships?
+    puts "Would you like to play with custom ship?"
+    puts "Type [Y]es to create up 4 ships or [N]o to use the defualt #{@default_ships.count}"
+    input = gets.chomp.upcase
+    if input == "Y"
+      setup_create_custom_ships
+    elsif input == "N"
+      @player_ships = @default_ships
+      @computer_ships = @default_ships
+    else
+      puts "Invalid input..."
+    end
+  end
+
+  def setup_create_custom_ships
+    puts "How many ships would you like to create? 1 - 4"
+    input = gets.chomp.to_i
+    if input >= 1 && input <= 4
+      for i in 1..input do
+        puts "Create ship #{i}"
+        puts "What is the name?"
+      end
+    else
+      puts "Invlaid input"
+      setup_create_custom_ships
+    end
   end
 
   def setup_board_size
